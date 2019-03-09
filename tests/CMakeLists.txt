@@ -25,4 +25,4 @@ macro(package_add_test TESTNAME)
 endmacro()
 
 # example of how to use package_add_test
-#package_add_test(test2 test1.cpp)
+package_add_test(unit_test unit_test.cc)
