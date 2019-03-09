@@ -5,9 +5,22 @@
 namespace soa {
 class SoaSort {
   public:
+  // Base case.
   template <class Iterator>
-  static void sort(Iterator first, Iterator last,
-      std::vector<Iterator> dependent_iterators)
+  static void sort_0(const std::vector<int>& indices, Iterator it)
+  {
+    apply_permutation(indices, it);
+  }
+  template <class Iterator, class... Iterators>
+  static void sort_0(const std::vector<int>& indices, Iterator i1,
+      Iterators... args)
+  {
+    apply_permutation(indices, i1);
+    sort_0(indices, args...);
+  }
+
+  template <class Iterator, class... Iterators>
+  static void sort(Iterator first, Iterator last, Iterators... args)
   {
     // Create a helper array to store indices from 0 to
     // distance(first,last)-1 (included).
@@ -25,9 +38,7 @@ class SoaSort {
     // The indices array gives the permutation of the lists that should
     // be applied to all things we want to sort.
     apply_permutation<Iterator>(indices, first);
-    for (auto it : dependent_iterators) {
-      apply_permutation(indices, it);
-    }
+    sort_0(indices, args...);
   }
 
   private:
