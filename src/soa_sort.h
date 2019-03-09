@@ -8,6 +8,8 @@
 #include <vector>
 namespace soa {
 class SoaSort {
+  static constexpr bool THREADING = false;
+
   public:
   // Base case.
   template <class Iterator>
@@ -20,9 +22,14 @@ class SoaSort {
   static void sort(const std::vector<int>& indices, Iterator i1,
       Iterators... args)
   {
-    std::thread t1(apply_permutation<Iterator>, indices, i1);
-    sort(indices, args...);
-    t1.join();
+    if (SoaSort::THREADING) {
+      std::thread t1(apply_permutation<Iterator>, indices, i1);
+      sort(indices, args...);
+      t1.join();
+    } else {
+      apply_permutation(indices, i1);
+      sort(indices, args...);
+    }
   }
 
   template <class Iterator, class... Iterators>
