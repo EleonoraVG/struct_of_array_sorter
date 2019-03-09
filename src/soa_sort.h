@@ -24,9 +24,8 @@ class SoaSort {
   {
     // Create a helper array to store indices from 0 to
     // distance(first,last)-1 (included).
-    int i = 0;
     std::vector<int> indices(std::distance(first, last));
-    std::iota(indices.begin(), indices.end(), i++);
+    std::iota(indices.begin(), indices.end(), 0);
 
     // Sort the indices using the values found in the first iterator.
     std::sort(indices.begin(), indices.end(),
