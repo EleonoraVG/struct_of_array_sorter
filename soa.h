@@ -3,11 +3,11 @@
 #include <vector>
 namespace soa {
 template <class T, class RandomIt>
-class Soa {
+class SoaSort {
   public:
   RandomIt compare_begin;
 
-  Soa(RandomIt begin)
+  SoaSort(RandomIt begin)
       : compare_begin(begin)
   {
   }
@@ -68,9 +68,10 @@ class Soa {
 };
 
 template <class T, class RandomIt>
-Soa<T, RandomIt> make_soa(RandomIt first, RandomIt last, T val)
+SoaSort<T, RandomIt> make_soa(RandomIt first, RandomIt last, T val)
+
 {
-  return Soa<T, RandomIt>(first);
+  return SoaSort<T, RandomIt>(first);
 }
 
 } // namespace soa
