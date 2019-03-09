@@ -10,12 +10,24 @@ int main()
   for (auto elem : test) {
     std::cout << elem << "\n";
   }
-
+  std::vector<int> second_vector = { 4, 3, 6, 5, 1, 2 };
+  auto dependent_vectors = {
+    std::make_pair(second_vector.begin(), second_vector.end())
+  };
   auto soa = soa::make_soa(test.begin(), test.end(), *(test.begin()));
-  soa.sort(test.begin(), test.end());
+  soa.sort(test.begin(), test.end(), dependent_vectors);
   std::cout << "test result:"
             << "\n";
+
+  std::cout << "The array that determined the order:"
+            << "\n";
   for (auto elem : test) {
+    std::cout << elem << "\n";
+  }
+
+  std::cout << "The second array:"
+            << "\n";
+  for (auto elem : second_vector) {
     std::cout << elem << "\n";
   }
   return 0;

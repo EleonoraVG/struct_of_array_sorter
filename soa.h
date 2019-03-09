@@ -11,16 +11,28 @@ class Soa {
       : compare_begin(begin)
   {
   }
-  int helper_compare(const void* a, const void* b)
+
+  // Algorithm copied from :
+  // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
+  void apply_permutation(std::vector<int> helper, RandomIt first)
   {
-    int first = *(const int*)a;
-    int second = *(const int*)b;
-    T compare_first = *(compare_begin + first);
-    T compare_second = *(compare_begin + second);
-    return compare_first < compare_second;
+    for (int i = 0; i < helper.size(); i++) {
+      // holds the value at i.
+      auto temp { *(first + i) };
+      auto current = i;
+      while (i != helper.at(current)) {
+        auto next = helper.at(current);
+        *(first + current) = *(first + next);
+        helper.at(current) = current;
+        current = next;
+      }
+      *(first + current) = temp;
+      helper.at(current) = current;
+    }
   }
 
-  void sort(RandomIt first, RandomIt last)
+  void sort(RandomIt first, RandomIt last,
+      std::vector<std::pair<RandomIt, RandomIt>> dependent_iterators)
   {
 
     // Create a helper array with a length the same as the distance between
@@ -34,35 +46,23 @@ class Soa {
       helper.push_back(i);
     }
 
-    std::cout << "compare_begin: " << *compare_begin << "\n";
-
     // Sort the helper array using the compare value that uses the values from
     // compare_array in the helper compare function.;
     std::sort(helper.begin(), helper.end(), [this](const T& a, const T& b) {
       return *(compare_begin + a) < *(compare_begin + b);
     });
 
-    std::cout << "helper array"
-              << "\n";
-    for (auto elem : helper) {
-      std::cout << elem << "\n";
-    }
+    // std::cout << "helper array"
+    //<< "\n";
+    // for (auto elem : helper) {
+    // std::cout << elem << "\n";
+    //}
 
     // The helper array now gives the permutation of the lists that should
-    // be applied to all things we want to sort. Algorithm copied from :
-    // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
-    for (int i = 0; i < helper.size(); i++) {
-      // holds the value at i.
-      auto temp { *(first + i) };
-      auto current = i;
-      while (i != helper[current]) {
-        auto next = helper[current];
-        *(first + current) = *(first + next);
-        helper[current] = current;
-        current = next;
-      }
-      *(first + current) = temp;
-      helper[current] = current;
+    // be applied to all things we want to sort.
+    apply_permutation(helper, first);
+    for (auto it : dependent_iterators) {
+      apply_permutation(helper, it.first);
     }
   }
 };
