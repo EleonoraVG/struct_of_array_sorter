@@ -1,7 +1,10 @@
+#ifndef SOASORT_H
+#define SOASORT_H
 #include <algorithm>
 #include <functional>
 #include <iostream>
 #include <numeric>
+#include <thread>
 #include <vector>
 namespace soa {
 class SoaSort {
@@ -17,8 +20,10 @@ class SoaSort {
   static void sort(const std::vector<int>& indices, Iterator i1,
       Iterators... args)
   {
-    apply_permutation(indices, i1);
+    //   std::thread t1(apply_permutation<Iterator>, indices, i1);
+    apply_permutation<Iterator>(indices, i1);
     sort(indices, args...);
+    // t1.join();
   }
 
   template <class Iterator, class... Iterators>
@@ -80,3 +85,4 @@ class SoaSort {
 };
 
 } // namespace soa
+#endif
