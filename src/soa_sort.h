@@ -7,16 +7,16 @@ class SoaSort {
   public:
   // Base case.
   template <class Iterator>
-  static void sort_0(const std::vector<int>& indices, Iterator it)
+  static void sort(const std::vector<int>& indices, Iterator it)
   {
     apply_permutation(indices, it);
   }
   template <class Iterator, class... Iterators>
-  static void sort_0(const std::vector<int>& indices, Iterator i1,
+  static void sort(const std::vector<int>& indices, Iterator i1,
       Iterators... args)
   {
     apply_permutation(indices, i1);
-    sort_0(indices, args...);
+    sort(indices, args...);
   }
 
   template <class Iterator, class... Iterators>
@@ -37,7 +37,7 @@ class SoaSort {
     // The indices array gives the permutation of the lists that should
     // be applied to all things we want to sort.
     apply_permutation<Iterator>(indices, first);
-    sort_0(indices, args...);
+    sort(indices, args...);
   }
 
   private:
