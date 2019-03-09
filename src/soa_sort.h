@@ -24,21 +24,11 @@ class SoaSort {
   template <class Iterator, class... Iterators>
   static void sort(Iterator first, Iterator last, Iterators... args)
   {
-    // Create a helper array to store indices from 0 to
-    // distance(first,last)-1 (included).
-    std::vector<int> indices(std::distance(first, last));
-    std::iota(indices.begin(), indices.end(), 0);
+    auto cmp = [](const decltype(*first)& a, const decltype(*first)& b) {
+      return a < b;
+    };
 
-    // Sort the indices using the values found in the first iterator.
-    std::sort(indices.begin(), indices.end(),
-        [first](const int& a, const int& b) {
-          return *(first + a) < *(first + b);
-        });
-
-    // The indices array gives the permutation of the lists that should
-    // be applied to all things we want to sort.
-    apply_permutation<Iterator>(indices, first);
-    sort(indices, args...);
+    sort_cmp(first, last, cmp, args...);
   }
 
   template <class Iterator, class... Iterators>
