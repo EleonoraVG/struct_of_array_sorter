@@ -6,7 +6,7 @@ namespace soa {
 class SoaSort {
   public:
   template <class Iterator>
-  const static void sort(Iterator first, Iterator last,
+  static void sort(Iterator first, Iterator last,
       std::vector<Iterator> dependent_iterators)
   {
     // Create a helper array to store indices from 0 to
@@ -34,8 +34,7 @@ class SoaSort {
   // disallow instantiating the class.
   SoaSort();
   template <class Iterator>
-  const static void apply_permutation(std::vector<int> helper,
-      Iterator first)
+  static void apply_permutation(std::vector<int> helper, Iterator first)
   {
     // Algorithm from :
     // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
