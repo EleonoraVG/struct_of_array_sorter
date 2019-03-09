@@ -51,8 +51,7 @@ class SoaSort {
 
     // The indices array gives the permutation of the lists that should
     // be applied to all things we want to sort.
-    apply_permutation<Iterator>(indices, first);
-    sort(indices, args...);
+    sort(indices, first, args...);
   }
 
   private:
