@@ -31,8 +31,8 @@ endif()
 
 # Turn this option off for performance testing!
 # Turn of if running unit tests.
-option(PACKAGE_TESTS "Build the tests" ON)
-if(PACKAGE_TESTS)
+option(BUILD_TESTS "Build the tests" ON)
+if(BUILD_TESTS)
   enable_testing()
   add_subdirectory(tests)
 endif()
