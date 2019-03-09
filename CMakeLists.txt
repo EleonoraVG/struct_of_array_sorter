@@ -9,7 +9,7 @@ endif()
 project(soa_sorter VERSION 0.1 DESCRIPTION "A sorter for structures of arrays." LANGUAGES CXX)
 include(CTest)
 
-#set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
