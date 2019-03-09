@@ -4,11 +4,21 @@
 
 namespace {
 
-TEST(SoaSortTest, SingleIntVector)
+TEST(SoaSortTest, EmptyIndependentAndEmptyDependent)
 {
-  std::vector<int> actual = { 6, 5, 4, 3, 2, 1, 0 };
-  soa::SoaSort::sort<decltype(actual.begin())>(actual.begin(), actual.end());
-  std::vector<int> expected = { 0, 1, 2, 3, 4, 5, 6 };
-  EXPECT_EQ(actual, expected);
+  std::vector<int> actual_independent = {};
+  std::vector<int> actual_dependent = {};
+
+  // Sort
+  soa::SoaSort::sort<decltype(actual_independent.begin())>(
+      actual_independent.begin(), actual_independent.end(),
+      actual_dependent.begin());
+
+  // Verify that nothing happend to both lists.
+  std::vector<int> expected_independent = {};
+  std::vector<int> expected_dependent = {};
+
+  EXPECT_EQ(actual_independent, expected_independent);
+  EXPECT_EQ(actual_dependent, expected_dependent);
 }
 } // namespace
