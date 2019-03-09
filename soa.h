@@ -1,21 +1,38 @@
 #include <algorithm>
 #include <iostream>
+#include <numeric>
 #include <vector>
 namespace soa {
-template <class T, class RandomIt>
+template <class T, class Iterator>
 class SoaSort {
   public:
-  RandomIt compare_begin;
-
-  SoaSort(RandomIt begin)
-      : compare_begin(begin)
+  void sort(Iterator first, Iterator last,
+      const std::vector<Iterator>& dependent_iterators)
   {
+    // Create a helper array to store indices from 0 to
+    // distance(first,last)-1 (included).
+    int i = 0;
+    std::vector<int> indices(std::distance(first, last));
+    std::iota(indices.begin(), indices.end(), i++);
+
+    // Sort the indices using the values found in the first iterator.
+    std::sort(indices.begin(), indices.end(), [first](const T& a, const T& b) {
+      return *(first + a) < *(first + b);
+    });
+
+    // The helper array now gives the permutation of the lists that should
+    // be applied to all things we want to sort.
+    apply_permutation(indices, first);
+    for (auto it : dependent_iterators) {
+      apply_permutation(indices, it);
+    }
   }
 
-  // Algorithm copied from :
-  // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
-  void apply_permutation(std::vector<int> helper, RandomIt first)
+  private:
+  void apply_permutation(std::vector<int> helper, Iterator first)
   {
+    // Algorithm from :
+    // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
     for (int i = 0; i < helper.size(); i++) {
       // holds the value at i.
       auto temp { *(first + i) };
@@ -30,48 +47,12 @@ class SoaSort {
       helper.at(current) = current;
     }
   }
-
-  void sort(RandomIt first, RandomIt last,
-      std::vector<std::pair<RandomIt, RandomIt>> dependent_iterators)
-  {
-
-    // Create a helper array with a length the same as the distance between
-    // first and last iterators, where the values range from 0 to
-    // distance(first,last)-1 (included).
-    std::vector<T> helper = {};
-
-    typename std::vector<T>::iterator pos;
-    int i = 0;
-    for (pos = first; pos != last; pos++, i++) {
-      helper.push_back(i);
-    }
-
-    // Sort the helper array using the compare value that uses the values from
-    // compare_array in the helper compare function.;
-    std::sort(helper.begin(), helper.end(), [this](const T& a, const T& b) {
-      return *(compare_begin + a) < *(compare_begin + b);
-    });
-
-    // std::cout << "helper array"
-    //<< "\n";
-    // for (auto elem : helper) {
-    // std::cout << elem << "\n";
-    //}
-
-    // The helper array now gives the permutation of the lists that should
-    // be applied to all things we want to sort.
-    apply_permutation(helper, first);
-    for (auto it : dependent_iterators) {
-      apply_permutation(helper, it.first);
-    }
-  }
 };
 
-template <class T, class RandomIt>
-SoaSort<T, RandomIt> make_soa(RandomIt first, RandomIt last, T val)
-
+template <class T, class Iterator>
+SoaSort<T, Iterator> make_soa(Iterator first, Iterator last, T val)
 {
-  return SoaSort<T, RandomIt>(first);
+  return SoaSort<T, Iterator>();
 }
 
 } // namespace soa
