@@ -21,7 +21,7 @@ public:
 	std::vector<Vector> velocities;
 	std::vector<int> masses;
 	std::vector<Color> colors;
-	std::vector<int> indices; // stride 2 (2 indices per element)
+	std::vector<uint8_t> indices; // stride 2 (2 indices per element)
 
 	void reserve(size_type count)
 	{
@@ -46,9 +46,9 @@ public:
 Particles create_random_particles(size_type nbOfParticles)
 {
 	std::random_device rd;
-	std::uniform_real<float> randFloat{};
-	std::uniform_int<int> randInt{};
-	std::uniform_int<uint8_t> randByte{};
+	std::uniform_real_distribution<float> randFloat{};
+	std::uniform_int_distribution<int> randInt{};
+	std::uniform_int_distribution<short> randByte(0, 255);
 
 	Particles result;
 	result.reserve(nbOfParticles);
@@ -57,7 +57,7 @@ Particles create_random_particles(size_type nbOfParticles)
 		Vector pos { randFloat(rd), randFloat(rd), randFloat(rd) };
 		Vector velocity { randFloat(rd), randFloat(rd), randFloat(rd) };
 		int mass = randInt(rd);
-		Color color { randByte(rd), randByte(rd), randByte(rd), randByte(rd) };
+		Color color { static_cast<uint8_t>(randByte(rd)), static_cast<uint8_t>(randByte(rd)), static_cast<uint8_t>(randByte(rd)), static_cast<uint8_t>(randByte(rd)) };
 		/*auto indexA = randInt(rd);
 		auto indexB = randInt(rd);*/
 		result.add_particle(pos, velocity, mass, color /*, indexA, indexB*/);
@@ -68,57 +68,66 @@ Particles create_random_particles(size_type nbOfParticles)
 int main()
 {
 	const auto particleCount = 10000000;
+	const auto iterations = 10;
 
 	std::cout << "Creating " << particleCount << " random particles" << std::endl;
 	auto particles = create_random_particles(particleCount);
 
-	/*{
-		std::cout << "Sorting by position" << std::endl;
 
-		auto start = std::chrono::high_resolution_clock::now();
-		soa::SoaSort::sort(
-			particles.positions.begin(), particles.positions.end(),
-			particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
-		auto finish = std::chrono::high_resolution_clock::now();
-
-		std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
-	}
-
+	for(int i = 0; i < iterations; i++)
 	{
-		std::cout << "Sorting by velocity" << std::endl;
+		std::cout << "Iteration " << (i+1) << std::endl;
 
-		auto start = std::chrono::high_resolution_clock::now();
-		soa::SoaSort::sort(
-			particles.velocities.begin(), particles.velocities.end(),
-			particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
-		auto finish = std::chrono::high_resolution_clock::now();
+		/*{
+			std::cout << "Sorting by position" << std::endl;
 
-		std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
-	}*/
+			auto start = std::chrono::high_resolution_clock::now();
+			soa::SoaSort::sort(
+				particles.positions.begin(), particles.positions.end(),
+				particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
+			auto finish = std::chrono::high_resolution_clock::now();
 
-	{
-		std::cout << "Sorting by mass" << std::endl;
+			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+		}
 
-		auto start = std::chrono::high_resolution_clock::now();
-		soa::SoaSort::sort(
-			particles.masses.begin(), particles.masses.end(),
-			particles.positions.begin(), particles.colors.begin(), particles.velocities.begin());
-		auto finish = std::chrono::high_resolution_clock::now();
+		{
+			std::cout << "Sorting by velocity" << std::endl;
 
-		std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+			auto start = std::chrono::high_resolution_clock::now();
+			soa::SoaSort::sort(
+				particles.velocities.begin(), particles.velocities.end(),
+				particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
+			auto finish = std::chrono::high_resolution_clock::now();
+
+			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+		}*/
+
+		{
+			std::cout << "Sorting by mass" << std::endl;
+
+			auto start = std::chrono::high_resolution_clock::now();
+			soa::SoaSort::sort(
+				particles.masses.begin(), particles.masses.end(),
+				particles.positions.begin(), particles.colors.begin(), particles.velocities.begin());
+			auto finish = std::chrono::high_resolution_clock::now();
+
+			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+		}
+
+		/*{
+			std::cout << "Sorting by color alpha value" << std::endl;
+
+			auto start = std::chrono::high_resolution_clock::now();
+			soa::SoaSort::sort(
+				particles.colors.begin(), particles.colors.end(),
+				particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
+			auto finish = std::chrono::high_resolution_clock::now();
+
+			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+		}*/
+
+		std::cout << std::endl;
 	}
-
-	/*{
-		std::cout << "Sorting by color alpha value" << std::endl;
-
-		auto start = std::chrono::high_resolution_clock::now();
-		soa::SoaSort::sort(
-			particles.colors.begin(), particles.colors.end(),
-			particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
-		auto finish = std::chrono::high_resolution_clock::now();
-
-		std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
-	}*/
 
 	std::cout << "Done!" << std::endl;
 	std::cin.get();
