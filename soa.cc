@@ -1,4 +1,4 @@
-#include "soa.h"
+#include "soa_sort.h"
 #include <algorithm>
 #include <iostream>
 #include <vector>
@@ -12,8 +12,8 @@ int main()
   }
   std::vector<int> second_vector = { 4, 3, 6, 5, 1, 2 };
   auto dependent_vectors = { second_vector.begin() };
-  auto soa = soa::make_soa(test.begin(), test.end(), *(test.begin()));
-  soa.sort(test.begin(), test.end(), dependent_vectors);
+  soa::SoaSort::sort<decltype(test.begin()), int>(test.begin(), test.end(),
+      dependent_vectors);
   std::cout << "test result:"
             << "\n";
 
