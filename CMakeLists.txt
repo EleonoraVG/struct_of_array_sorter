@@ -13,3 +13,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Build example and include header only library soa_sort.h
 add_executable(example src/example.cc src/soa_sort.h)
+
+add_executable(test_particles tests/particles.cc)
+target_include_directories(test_particles PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
