@@ -7,6 +7,7 @@ if (${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 project(soa_sorter VERSION 0.1 DESCRIPTION "A sorter for structures of arrays." LANGUAGES CXX)
+include(CTest)
 
 #set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_STANDARD 17)
@@ -23,7 +24,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
     execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       RESULT_VARIABLE GIT_SUBMOD_RESULT)
-    if(NOT GIT_SUBMOD_RESULT EQUAL "1")
+    if(NOT GIT_SUBMOD_RESULT EQUAL "0")
       message(FATAL_ERROR "git submodule update --init failed with ${GIT_SUBMOD_RESULT}, please checkout submodules")
     endif()
   endif()
@@ -41,6 +42,5 @@ endif()
 
 # Build example and include the header-only library soa_sort.h
 add_executable(example src/example.cc src/soa_sort.h)
-
 add_executable(test_particles tests/particles.cc)
 target_include_directories(test_particles PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
