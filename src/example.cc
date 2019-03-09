@@ -17,15 +17,15 @@ int main()
   std::vector<int> second_vector = { 4, 3, 6, 5, 1, 2 };
   std::vector<int> third_vector = { 1, 2, 3, 4, 5, 6 };
   std::vector<char> char_vector = { 'd', 'c', 'f', 'e', 'a', 'b' };
-  // auto cmp = [](const int& a, const int& b) { return a > b; };
+  auto cmp = [](const int& a, const int& b) { return a > b; };
+
+  soa::SoaSort::sort_cmp<decltype(test.begin())>(
+      test.begin(), test.end(), cmp, second_vector.begin(),
+      third_vector.begin(), char_vector.begin());
 
   // soa::SoaSort::sort<decltype(test.begin())>(
-  // cmp, test.begin(), test.end(), second_vector.begin(),
-  // third_vector.begin(), char_vector.begin());
-
-  soa::SoaSort::sort<decltype(test.begin())>(
-      test.begin(), test.end(), second_vector.begin(), third_vector.begin(),
-      char_vector.begin());
+  // test.begin(), test.end(), second_vector.begin(), third_vector.begin(),
+  // char_vector.begin());
   // Print the sorted test vector and the other 2 dependent_vectors.
   std::cout << "first vector: "
             << "\n";

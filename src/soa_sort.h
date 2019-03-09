@@ -41,29 +41,29 @@ class SoaSort {
     sort(indices, args...);
   }
 
-  // template <class Iterator, class... Iterators>
-  // static void
-  // sort(Iterator first, Iterator last,
-  // std::function<bool(const decltype(*first)& a, const decltype(*first)& b)>
-  // cmp,
-  // Iterators... args)
-  //{
-  //// Create a helper array to store indices from 0 to
-  //// distance(first,last)-1 (included).
-  // std::vector<int> indices(std::distance(first, last));
-  // std::iota(indices.begin(), indices.end(), 0);
+  template <class Iterator, class... Iterators>
+  static void sort_cmp(
+      Iterator first, Iterator last,
+      std::function<bool(const decltype(*first)& a, const decltype(*first)& b)>
+          cmp,
+      Iterators... args)
+  {
+    // Create a helper array to store indices from 0 to
+    // distance(first,last)-1 (included).
+    std::vector<int> indices(std::distance(first, last));
+    std::iota(indices.begin(), indices.end(), 0);
 
-  //// Sort the indices using the values found in the first iterator.
-  // std::sort(indices.begin(), indices.end(),
-  //[first, cmp](const int& a, const int& b) {
-  // return cmp(*(first + a), *(first + b));
-  //});
+    // Sort the indices using the values found in the first iterator.
+    std::sort(indices.begin(), indices.end(),
+        [first, cmp](const int& a, const int& b) {
+          return cmp(*(first + a), *(first + b));
+        });
 
-  //// The indices array gives the permutation of the lists that should
-  //// be applied to all things we want to sort.
-  // apply_permutation<Iterator>(indices, first);
-  // sort(indices, args...);
-  //}
+    // The indices array gives the permutation of the lists that should
+    // be applied to all things we want to sort.
+    apply_permutation<Iterator>(indices, first);
+    sort(indices, args...);
+  }
 
   private:
   // disallow instantiating the class.

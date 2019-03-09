@@ -11,6 +11,8 @@ project(soa_sorter VERSION 0.1 DESCRIPTION "A sorter for structures of arrays." 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(CMAKE_BUILD_TYPE Release)
+
 # Build example and include header only library soa_sort.h
 add_executable(example src/example.cc src/soa_sort.h)
 
