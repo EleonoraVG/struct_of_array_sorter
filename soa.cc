@@ -11,7 +11,7 @@ int main()
     std::cout << elem << "\n";
   }
 
-  auto soa = soa::make_soa(test.begin(), test.end(), 4);
+  auto soa = soa::make_soa(test.begin(), test.end(), *(test.begin()));
   soa.sort(test.begin(), test.end());
   std::cout << "test result:"
             << "\n";
