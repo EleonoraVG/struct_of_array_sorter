@@ -11,6 +11,7 @@ class SoaSort {
   {
     apply_permutation(indices, it);
   }
+
   template <class Iterator, class... Iterators>
   static void sort(const std::vector<int>& indices, Iterator i1,
       Iterators... args)
@@ -44,22 +45,23 @@ class SoaSort {
   // disallow instantiating the class.
   SoaSort();
   template <class Iterator>
-  static void apply_permutation(std::vector<int> helper, Iterator first)
+  static void apply_permutation(const std::vector<int>& indices,
+      Iterator first)
   {
-    // Algorithm from :
-    // https://blogs.msdn.microsoft.com/oldnewthing/20170102-00/?p=95095
-    for (int i = 0; i < helper.size(); i++) {
-      // holds the value at i.
-      auto temp { *(first + i) };
-      auto current = i;
-      while (i != helper.at(current)) {
-        auto next = helper.at(current);
-        std::iter_swap(first + current, first + next);
-        helper.at(current) = current;
-        current = next;
+
+    std::vector<bool> done(indices.size());
+    for (std::size_t i = 0; i < indices.size(); i++) {
+      if (!done[i]) {
+        done[i] = true;
+        std::size_t prev_j = i;
+        std::size_t j = indices[i];
+        while (i != j) {
+          std::iter_swap(first + prev_j, first + j);
+          done[j] = true;
+          prev_j = j;
+          j = indices[j];
+        }
       }
-      *(first + current) = temp;
-      helper.at(current) = current;
     }
   }
 };
