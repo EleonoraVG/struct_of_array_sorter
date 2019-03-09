@@ -1,6 +1,7 @@
 #include "soa_sort.h"
 #include <random>
 #include <chrono>
+#include "utility.h"
 
 using size_type = std::vector<char>::size_type;
 
@@ -70,20 +71,24 @@ int main()
 	const auto particleCount = 10000000;
 	const auto iterations = 10;
 
+	std::cout << "Baseline memory usage: " << getMemoryUsage() << " bytes." << std::endl;
+	
 	std::cout << "Creating " << particleCount << " random particles" << std::endl;
 	auto particles = create_random_particles(particleCount);
 
+	std::cout << "New memory usage: " << getMemoryUsage() << " bytes." << std::endl;
 
 	for(int i = 0; i < iterations; i++)
 	{
 		std::cout << "Iteration " << (i+1) << std::endl;
 
-		/*{
-			std::cout << "Sorting by position" << std::endl;
+		{
+			std::cout << "Sorting by position x coordinate" << std::endl;
 
 			auto start = std::chrono::high_resolution_clock::now();
-			soa::SoaSort::sort(
+			soa::SoaSort::sort_cmp(
 				particles.positions.begin(), particles.positions.end(),
+				[](const auto& a, const auto& b) { return a.x < b.x; },
 				particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
 			auto finish = std::chrono::high_resolution_clock::now();
 
@@ -91,16 +96,17 @@ int main()
 		}
 
 		{
-			std::cout << "Sorting by velocity" << std::endl;
+			std::cout << "Sorting by velocity y value" << std::endl;
 
 			auto start = std::chrono::high_resolution_clock::now();
-			soa::SoaSort::sort(
+			soa::SoaSort::sort_cmp(
 				particles.velocities.begin(), particles.velocities.end(),
+				[](const auto& a, const auto& b) { return a.y < b.y; },
 				particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
 			auto finish = std::chrono::high_resolution_clock::now();
 
 			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
-		}*/
+		}
 
 		{
 			std::cout << "Sorting by mass" << std::endl;
@@ -114,17 +120,18 @@ int main()
 			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
 		}
 
-		/*{
+		{
 			std::cout << "Sorting by color alpha value" << std::endl;
 
 			auto start = std::chrono::high_resolution_clock::now();
-			soa::SoaSort::sort(
+			soa::SoaSort::sort_cmp(
 				particles.colors.begin(), particles.colors.end(),
+				[](const auto& a, const auto& b) { return a.a < b.a; },
 				particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
 			auto finish = std::chrono::high_resolution_clock::now();
 
 			std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
-		}*/
+		}
 
 		std::cout << std::endl;
 	}
