@@ -22,7 +22,7 @@ class SoaSort {
           return *(first + a) < *(first + b);
         });
 
-    // The helper array now gives the permutation of the lists that should
+    // The indices array gives the permutation of the lists that should
     // be applied to all things we want to sort.
     apply_permutation<Iterator>(indices, first);
     for (auto it : dependent_iterators) {
@@ -45,7 +45,7 @@ class SoaSort {
       auto current = i;
       while (i != helper.at(current)) {
         auto next = helper.at(current);
-        *(first + current) = *(first + next);
+        std::iter_swap(first + current, first + next);
         helper.at(current) = current;
         current = next;
       }
