@@ -189,11 +189,11 @@ _TeamCity*
 
 # AxoCover is a Code Coverage Tool
 .axoCover/*
-!.axoCover/settings.json
+            !.axoCover/settings.json
 
 # Visual Studio code coverage results
-*.coverage
-*.coveragexml
+          *.coverage
+          *.coveragexml
 
 # NCrunch
 _NCrunch_*
@@ -201,8 +201,8 @@ _NCrunch_*
 nCrunchTemp_*
 
 # MightyMoose
-*.mm.*
-AutoTest.Net/
+          *.mm.*
+          AutoTest.Net/
 
 # Web workbench (sass)
 .sass-cache/
@@ -224,12 +224,12 @@ DocProject/Help/html
 publish/
 
 # Publish Web Output
-*.[Pp]ublish.xml
-*.azurePubxml
+          *.[Pp]ublish.xml
+          *.azurePubxml
 # Note: Comment the next line if you want to checkin your web deploy settings,
 # but database connection strings (with potential passwords) will be unencrypted
-*.pubxml
-*.publishproj
+          *.pubxml
+          *.publishproj
 
 # Microsoft Azure Web App publish settings. Comment the next line if you want to
 # checkin your Azure Web App publish settings, but sensitive information contained
@@ -237,9 +237,9 @@ publish/
 PublishScripts/
 
 # NuGet Packages
-*.nupkg
+          *.nupkg
 # The packages folder can be ignored because of Package Restore
-**/[Pp]ackages/*
+          **/[Pp]ackages/*
 # except build/, which is used as an MSBuild target.
 !**/[Pp]ackages/build/
 # Uncomment if necessary however generally it will be regenerated when needed
@@ -365,16 +365,16 @@ __pycache__/
 # !tools/packages.config
 
 # Tabs Studio
-*.tss
+        *.tss
 
 # Telerik's JustMock configuration file
-*.jmconfig
+        *.jmconfig
 
 # BizTalk build output
-*.btp.cs
-*.btm.cs
-*.odx.cs
-*.xsd.cs
+        *.btp.cs
+        *.btm.cs
+        *.odx.cs
+        *.xsd.cs
 
 # OpenCover UI analysis results
 OpenCover/
@@ -383,10 +383,10 @@ OpenCover/
 ASALocalRun/
 
 # MSBuild Binary and Structured Log
-*.binlog
+        *.binlog
 
 # NVidia Nsight GPU debugger configuration file
-*.nvuser
+        *.nvuser
 
 # MFractors (Xamarin productivity tool) working folder
 .mfractor/
@@ -399,4 +399,4 @@ healthchecksdb
 
 # Backup folder for Package Reference Convert tool in Visual Studio 2017
 MigrationBackup/
-
+build/
