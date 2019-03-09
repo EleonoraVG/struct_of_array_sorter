@@ -30,8 +30,7 @@ class SoaSort {
 
     // Sort the indices using the values found in the first iterator.
     std::sort(indices.begin(), indices.end(),
-        [first](const decltype(*indices.begin())& a,
-            const decltype(*indices.begin())& b) {
+        [first](const int& a, const int& b) {
           return *(first + a) < *(first + b);
         });
 
