@@ -12,7 +12,7 @@ int main()
   }
   std::vector<int> second_vector = { 4, 3, 6, 5, 1, 2 };
   auto dependent_vectors = { second_vector.begin() };
-  soa::SoaSort::sort<decltype(test.begin()), int>(test.begin(), test.end(),
+  soa::SoaSort::sort<decltype(test.begin())>(test.begin(), test.end(),
       dependent_vectors);
   std::cout << "test result:"
             << "\n";

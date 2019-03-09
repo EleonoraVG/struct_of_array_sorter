@@ -5,7 +5,7 @@
 namespace soa {
 class SoaSort {
   public:
-  template <class Iterator, class T>
+  template <class Iterator>
   const static void sort(Iterator first, Iterator last,
       std::vector<Iterator> dependent_iterators)
   {
@@ -17,7 +17,8 @@ class SoaSort {
 
     // Sort the indices using the values found in the first iterator.
     std::sort(indices.begin(), indices.end(),
-        [first](const T& a, const T& b) {
+        [first](const decltype(*indices.begin())& a,
+            const decltype(*indices.begin())& b) {
           return *(first + a) < *(first + b);
         });
 
