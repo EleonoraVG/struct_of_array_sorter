@@ -2,6 +2,8 @@
 #include "utility.h"
 #include <chrono>
 #include <exception>
+#include <fstream>
+#include <iostream>
 #include <random>
 
 using size_type = std::vector<char>::size_type;
@@ -63,11 +65,44 @@ Particles create_random_particles(size_type nbOfParticles)
   return result;
 }
 
+struct IterationResult {
+  int pos_x = 0;
+  int vel_y = 0;
+  int mass = 0;
+  int color_alpha = 0;
+};
+
+void write_to_csv(std::vector<IterationResult> iteration_results, std::string test_name)
+{
+  std::ofstream csv_file;
+  csv_file.open("../output/" + test_name + "_results.csv", std::ios_base::app);
+  if (csv_file.is_open()) {
+    csv_file << test_name << "\n";
+    csv_file << "pos_x"
+             << ","
+             << "vel_y"
+             << ","
+             << "mass "
+             << ","
+             << "color_alpha "
+             << "\n";
+
+    for (auto result : iteration_results) {
+      csv_file << result.pos_x << "," << result.vel_y << "," << result.mass << "," << result.color_alpha << "\n";
+    }
+    csv_file.flush();
+    csv_file.close();
+  } else {
+    std::cout << "Failed to write to csv_file"
+              << "\n";
+  }
+}
+
 int main()
 {
   const auto particleCount = 10000000;
   const auto iterations = 10;
-
+  std::vector<IterationResult> results = {};
   std::cout << "Baseline memory usage: " << getMemoryUsage() << " bytes." << std::endl;
 
   std::cout << "Creating " << particleCount << " random particles" << std::endl;
@@ -76,6 +111,7 @@ int main()
   std::cout << "New memory usage: " << getMemoryUsage() << " bytes." << std::endl;
 
   for (int i = 0; i < iterations; i++) {
+    IterationResult result;
     std::cout << "Iteration " << (i + 1) << std::endl;
 
     {
@@ -88,7 +124,9 @@ int main()
           particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
       auto finish = std::chrono::high_resolution_clock::now();
 
-      std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+      std::cout << "Sorted in " << duration << " milliseconds" << std::endl;
+      result.pos_x = duration;
     }
 
     {
@@ -101,7 +139,9 @@ int main()
           particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
       auto finish = std::chrono::high_resolution_clock::now();
 
-      std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+      std::cout << "Sorted in " << duration << " milliseconds" << std::endl;
+      result.vel_y = duration;
     }
 
     {
@@ -112,8 +152,9 @@ int main()
           particles.masses.begin(), particles.masses.end(),
           particles.positions.begin(), particles.colors.begin(), particles.velocities.begin());
       auto finish = std::chrono::high_resolution_clock::now();
-
-      std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+      std::cout << "Sorted in " << duration << " milliseconds" << std::endl;
+      result.mass = duration;
     }
 
     {
@@ -126,12 +167,15 @@ int main()
           particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
       auto finish = std::chrono::high_resolution_clock::now();
 
-      std::cout << "Sorted in " << std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count() << " milliseconds" << std::endl;
+      auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(finish - start).count();
+      std::cout << "Sorted in " << duration << " milliseconds" << std::endl;
+      result.color_alpha = duration;
     }
 
+    results.push_back(result);
     std::cout << std::endl;
   }
-
+  write_to_csv(results, "threading_on");
   std::cout << "Done!" << std::endl;
   std::cin.get();
 
