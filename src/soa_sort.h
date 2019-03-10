@@ -42,8 +42,6 @@ class SoaSort {
           cmp,
       Iterators... args)
   {
-    // Create a helper array to store indices from 0 to
-    // distance(first,last)-1 (included).
     std::vector<int> indices(std::distance(first, last));
     std::iota(indices.begin(), indices.end(), 0);
 
@@ -53,8 +51,7 @@ class SoaSort {
           return cmp(*(first + a), *(first + b));
         });
 
-    // The indices array gives the permutation of the lists that should
-    // be applied to all things we want to sort.
+    // Apply the calculated permutation to all other iterators.
     sort(indices, first, args...);
   }
 
