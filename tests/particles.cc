@@ -75,21 +75,27 @@ struct IterationResult {
 void write_to_csv(std::vector<IterationResult> iteration_results, std::string test_name)
 {
   std::ofstream csv_file;
-  csv_file.open("output/" + test_name + "_results.csv");
-  csv_file << test_name << "\n";
-  csv_file << "pos_x"
-           << ","
-           << "vel_y"
-           << ","
-           << "mass "
-           << ","
-           << "color_alpha "
-           << "\n";
+  csv_file.open("../output/" + test_name + "_results.csv");
+  if (csv_file.is_open()) {
+    csv_file << test_name << "\n";
+    csv_file << "pos_x"
+             << ","
+             << "vel_y"
+             << ","
+             << "mass "
+             << ","
+             << "color_alpha "
+             << "\n";
 
-  for (auto result : iteration_results) {
-    csv_file << result.pos_x << "," << result.vel_y << "," << result.mass << "," << result.color_alpha << "\n";
+    for (auto result : iteration_results) {
+      csv_file << result.pos_x << "," << result.vel_y << "," << result.mass << "," << result.color_alpha << "\n";
+    }
+    csv_file.flush();
+    csv_file.close();
+  } else {
+    std::cout << "Failed to write to csv_file"
+              << "\n";
   }
-  csv_file.close();
 }
 
 int main()
