@@ -12,10 +12,12 @@ class SoaSort {
 
   public:
   // Sort the elements in range [first, last) in ascending order.
-  // Apply the permutation determined by the [first, last) sort order to the remaining iterators given by args.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators 
+  // given by args.
   //
   // The parameters first, last determine the range of elements to sort.
-  // The value of the elements from [first, last) determine the permutation which is then applied to the remaining args.
+  // The value of the elements from [first, last) determine the permutation which is then applied 
+  // to the remaining args.
   //
   // The args are iterators which point to starting point where the permutation will be applied.
   template <class Iterator, class... Iterators>
@@ -29,10 +31,12 @@ class SoaSort {
   }
 
   // Sort the elements in range [first, last) with a custom comparator.
-  // Apply the permutation determined by the [first, last) sort order to the remaining iterators given by args.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators 
+  // given by args.
   //
-  // First and last determine the range of elements to sort,the value of the elements from [first, last)
-  // determine the permutation which is then applied to the remaining args.
+  // First and last determine the range of elements to sort.
+  // The value of the elements from [first, last) determine the permutation which is 
+  // then applied to the remaining args.
   //
   // The args are iterators which point to starting point where the permutation will be applied.
   template <class Iterator, class... Iterators>
