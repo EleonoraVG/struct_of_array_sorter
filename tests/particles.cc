@@ -75,7 +75,8 @@ struct IterationResult {
 void write_to_csv(std::vector<IterationResult> iteration_results, std::string test_name)
 {
   std::ofstream csv_file;
-  csv_file.open("../output/" + test_name + "_results.csv");
+
+  csv_file.open("../output/" + test_name + "_results.csv", std::ios_base::app);
   if (csv_file.is_open()) {
     csv_file << test_name << "\n";
     csv_file << "pos_x"
