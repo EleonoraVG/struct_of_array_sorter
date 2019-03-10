@@ -8,7 +8,7 @@
 #include <vector>
 namespace soa {
 class SoaSort {
-  static constexpr bool THREADING = false;
+  static constexpr bool THREADING = true;
 
   public:
   // Base case.
