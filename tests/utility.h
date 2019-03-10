@@ -6,16 +6,16 @@ uint64_t getMemoryUsage();
 
 #if defined(_WIN64) || defined(_WIN32)
 
-#include "windows.h"
 #include "psapi.h"
+#include "windows.h"
 
 uint64_t getMemoryUsage()
 {
-	PROCESS_MEMORY_COUNTERS_EX pmc;
-	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)) == 0) {
-		throw std::exception("Failed to retrieve memory info");
-	}
-	return pmc.PrivateUsage;
+  PROCESS_MEMORY_COUNTERS_EX pmc;
+  if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)) == 0) {
+    throw std::exception("Failed to retrieve memory info");
+  }
+  return pmc.PrivateUsage;
 }
 
 #elif defined(__unix__)
