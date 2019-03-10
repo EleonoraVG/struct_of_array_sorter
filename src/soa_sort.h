@@ -11,27 +11,13 @@ class SoaSort {
   static constexpr bool THREADING = true;
 
   public:
-  // Base case.
-  template <class Iterator>
-  static void sort(const std::vector<int>& indices, Iterator it)
-  {
-    apply_permutation(indices, it);
-  }
-
-  template <class Iterator, class... Iterators>
-  static void sort(const std::vector<int>& indices, Iterator i1,
-      Iterators... args)
-  {
-    if (SoaSort::THREADING) {
-      std::thread t1(apply_permutation<Iterator>, indices, i1);
-      sort(indices, args...);
-      t1.join();
-    } else {
-      apply_permutation(indices, i1);
-      sort(indices, args...);
-    }
-  }
-
+  // Sort the elements in range [first, last) in ascending order.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators given by args.
+  //
+  // The parameters first, last determine the range of elements to sort.
+  // The value of the elements from [first, last) determine the permutation which is then applied to the remaining args.
+  //
+  // The args are iterators which point to starting point where the permutation will be applied.
   template <class Iterator, class... Iterators>
   static void sort(Iterator first, Iterator last, Iterators... args)
   {
@@ -42,6 +28,13 @@ class SoaSort {
     sort_cmp(first, last, cmp, args...);
   }
 
+  // Sort the elements in range [first, last) with a custom comparator.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators given by args.
+  //
+  // First and last determine the range of elements to sort,the value of the elements from [first, last)
+  // determine the permutation which is then applied to the remaining args.
+  //
+  // The args are iterators which point to starting point where the permutation will be applied.
   template <class Iterator, class... Iterators>
   static void sort_cmp(
       Iterator first, Iterator last,
@@ -86,6 +79,28 @@ class SoaSort {
           j = indices[j];
         }
       }
+    }
+  }
+
+  // Base case for parameter packing.
+  template <class Iterator>
+  static void sort(const std::vector<int>& indices, Iterator it)
+  {
+    apply_permutation(indices, it);
+  }
+
+  // Start a new thread for every apply permutation.
+  template <class Iterator, class... Iterators>
+  static void sort(const std::vector<int>& indices, Iterator i1,
+      Iterators... args)
+  {
+    if (SoaSort::THREADING) {
+      std::thread t1(apply_permutation<Iterator>, indices, i1);
+      sort(indices, args...);
+      t1.join();
+    } else {
+      apply_permutation(indices, i1);
+      sort(indices, args...);
     }
   }
 };
