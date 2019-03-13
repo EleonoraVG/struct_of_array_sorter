@@ -10,7 +10,9 @@ namespace soa {
 class SoaSort {
   static constexpr bool THREADING = true;
 
-  public:
+public:
+  SoaSort() = delete;
+
   // Sort the elements in range [first, last) in ascending order.
   // Apply the permutation determined by the [first, last) sort order to the remaining iterators 
   // given by args.
@@ -59,9 +61,7 @@ class SoaSort {
     sort(indices, first, args...);
   }
 
-  private:
-  // disallow instantiating the class.
-  SoaSort();
+private:
   template <class Iterator>
   static void apply_permutation(const std::vector<int>& indices,
       Iterator first)
