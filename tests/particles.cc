@@ -4,6 +4,7 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <random>
 
 using size_type = std::vector<char>::size_type;
