@@ -34,7 +34,6 @@ TEST(SoaSortTest, SingleIntIndependentAndSingleIntDependent)
       actual_independent.begin(), actual_independent.end(),
       actual_dependent.begin());
 
-  // Verify that nothing happend to both lists.
   std::vector<int> expected_independent = { 1, 2, 3, 4, 5 };
   std::vector<int> expected_dependent = { 5, 4, 3, 2, 1 };
 
@@ -52,7 +51,6 @@ TEST(SoaSortTest, Test2IntArrays)
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent));
 
-  // Verify that nothing happend to both lists.
   int expected_independent[5] = { 1, 2, 3, 4, 5 };
   int expected_dependent[5] = { 5, 4, 3, 2, 1 };
 
@@ -71,7 +69,6 @@ TEST(SoaSortTest, Test2IntArraysOneChar)
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent_0), std::begin(actual_dependent_1));
 
-  // Verify that nothing happend to both lists.
   int expected_independent[5] = { 1, 2, 3, 4, 5 };
   int expected_dependent_0[5] = { 5, 4, 3, 2, 1 };
   int expected_dependent_1[5] = { 'a', 'b', 'c', 'd', 'e' };

@@ -44,7 +44,7 @@ public:
   template <class Iterator, class... Iterators>
   static void sort_cmp(
       Iterator first, Iterator last,
-      std::function<bool(const decltype(*first)& a, const decltype(*first)& b)>
+      const std::function<bool(const decltype(*first)& a, const decltype(*first)& b)>&
           cmp,
       Iterators... args)
   {
