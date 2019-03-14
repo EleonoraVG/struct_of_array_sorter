@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 
 #include <vector>
+#include <array>
 
 namespace {
 
@@ -76,5 +77,51 @@ TEST(SoaSortTest, Test2IntArraysOneChar)
   ASSERT_THAT(actual_independent, ::testing::ElementsAreArray(expected_independent));
   ASSERT_THAT(actual_dependent_0, ::testing::ElementsAreArray(expected_dependent_0));
   ASSERT_THAT(actual_dependent_1, ::testing::ElementsAreArray(expected_dependent_1));
+}
+
+TEST(SoaSortTest, TestComparator)
+{
+	int actual_independent[5] = {  0,  1, 2,  3,  4 };
+	int referenced_data[5]    = { 20, 10, 0, 30, 40 };
+	int actual_dependent[5]   = {  3,  2, 5,  4,  1 };
+	
+	// Sort
+	soa_sort::sort_cmp(
+		std::begin(actual_independent), std::end(actual_independent), 
+		[&referenced_data](auto a, auto b)
+		{
+			return referenced_data[a] < referenced_data[b];
+		},
+		std::begin(actual_dependent));
+
+	int expected_independent[5] = { 2, 1, 0, 3, 4 };
+	int expected_dependent[5]   = { 5, 2, 3, 4, 1 };
+
+	ASSERT_THAT(actual_independent, ::testing::ElementsAreArray(expected_independent));
+	ASSERT_THAT(actual_dependent, ::testing::ElementsAreArray(expected_dependent));
+}
+
+TEST(SoaSortTest, TestVectorOfArrays)
+{
+	std::vector<std::array<uint32_t, 2>> actual_independent = 
+		{ {0, 100}, {1, 101}, {2, 102},  {3, 103},  {4, 104} };
+	int referenced_data[5] = { 20, 0, 10, 40, 30 };
+	int actual_dependent[5] = { 3, 2, 5,  4, 1 };
+
+	// Sort
+	soa_sort::sort_cmp(
+		std::begin(actual_independent), std::end(actual_independent),
+		[&referenced_data](auto a, auto b)
+		{
+			return referenced_data[a[0]] < referenced_data[b[0]];
+		},
+		std::begin(actual_dependent));
+
+	std::vector<std::array<uint32_t, 2>> expected_independent = 
+		{ {1, 101}, {2, 102}, {0, 100}, {4, 104}, {3, 103} };
+	int expected_dependent[5] = { 2, 5, 3, 1, 4 };
+
+	ASSERT_THAT(actual_independent, ::testing::ElementsAreArray(expected_independent));
+	ASSERT_THAT(actual_dependent, ::testing::ElementsAreArray(expected_dependent));
 }
 } // namespace
