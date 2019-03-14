@@ -19,9 +19,9 @@ int main()
   std::vector<char> char_vector = { 'd', 'c', 'f', 'e', 'a', 'b' };
   auto cmp = [](const int& a, const int& b) { return a > b; };
 
-  soa::SoaSort::sort<decltype(test.begin())>(
-  test.begin(), test.end(), second_vector.begin(), third_vector.begin(),
-  char_vector.begin());
+  soa_sort::sort<decltype(test.begin())>(
+      test.begin(), test.end(), second_vector.begin(), third_vector.begin(),
+      char_vector.begin());
 
   // Print the sorted test vector and the other 2 dependent_vectors.
   std::cout << "first vector: "

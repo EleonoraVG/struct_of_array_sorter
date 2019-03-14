@@ -4,8 +4,8 @@
 #include <exception>
 #include <fstream>
 #include <iostream>
-#include <string>
 #include <random>
+#include <string>
 
 using size_type = std::vector<char>::size_type;
 
@@ -119,7 +119,7 @@ int main()
       std::cout << "Sorting by position x coordinate" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa::SoaSort::sort_cmp(
+      soa_sort::sort_cmp(
           particles.positions.begin(), particles.positions.end(),
           [](const auto& a, const auto& b) { return a.x < b.x; },
           particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
@@ -134,7 +134,7 @@ int main()
       std::cout << "Sorting by velocity y value" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa::SoaSort::sort_cmp(
+      soa_sort::sort_cmp(
           particles.velocities.begin(), particles.velocities.end(),
           [](const auto& a, const auto& b) { return a.y < b.y; },
           particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
@@ -149,7 +149,7 @@ int main()
       std::cout << "Sorting by mass" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa::SoaSort::sort(
+      soa_sort::sort(
           particles.masses.begin(), particles.masses.end(),
           particles.positions.begin(), particles.colors.begin(), particles.velocities.begin());
       auto finish = std::chrono::high_resolution_clock::now();
@@ -162,7 +162,7 @@ int main()
       std::cout << "Sorting by color alpha value" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa::SoaSort::sort_cmp(
+      soa_sort::sort_cmp(
           particles.colors.begin(), particles.colors.end(),
           [](const auto& a, const auto& b) { return a.a < b.a; },
           particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
