@@ -12,7 +12,7 @@ TEST(SoaSortTest, EmptyIndependentAndEmptyDependent)
   std::vector<int> actual_dependent = {};
 
   // Sort
-  soa::SoaSort::sort<decltype(actual_independent.begin())>(
+  soa_sort::sort<decltype(actual_independent.begin())>(
       actual_independent.begin(), actual_independent.end(),
       actual_dependent.begin());
 
@@ -30,7 +30,7 @@ TEST(SoaSortTest, SingleIntIndependentAndSingleIntDependent)
   std::vector<int> actual_dependent = { 3, 4, 1, 2, 5 };
 
   // Sort
-  soa::SoaSort::sort<>(
+  soa_sort::sort<>(
       actual_independent.begin(), actual_independent.end(),
       actual_dependent.begin());
 
@@ -47,7 +47,7 @@ TEST(SoaSortTest, Test2IntArrays)
   int actual_dependent[5] = { 3, 4, 1, 2, 5 };
 
   // Sort
-  soa::SoaSort::sort<decltype(std::begin(actual_independent))>(
+  soa_sort::sort<decltype(std::begin(actual_independent))>(
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent));
 
@@ -65,7 +65,7 @@ TEST(SoaSortTest, Test2IntArraysOneChar)
   int actual_dependent_1[5] = { 'c', 'b', 'e', 'd', 'a' };
 
   // Sort
-  soa::SoaSort::sort<decltype(std::begin(actual_independent))>(
+  soa_sort::sort<decltype(std::begin(actual_independent))>(
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent_0), std::begin(actual_dependent_1));
 
