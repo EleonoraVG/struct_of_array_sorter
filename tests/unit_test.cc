@@ -124,4 +124,26 @@ TEST(SoaSortTest, TestVectorOfArrays)
 	ASSERT_THAT(actual_independent, ::testing::ElementsAreArray(expected_independent));
 	ASSERT_THAT(actual_dependent, ::testing::ElementsAreArray(expected_dependent));
 }
+
+TEST(SoaSortTest, TestPartialSort)
+{
+	int actual_independent[5] = {  0,  1, 2,  3,  4 };
+	int referenced_data[5]    = { 20, 10, 0, 30, 15 };
+	int actual_dependent[5]   = {  3,  2, 5,  4,  1 };
+
+	// Sort
+	soa_sort::sort_cmp(
+		std::begin(actual_independent) + 1, std::begin(actual_independent) + 4,
+		[&referenced_data](auto a, auto b)
+		{
+			return referenced_data[a] < referenced_data[b];
+		},
+		std::begin(actual_dependent) + 1);
+
+	int expected_independent[5] = { 0, 2, 1, 3, 4 };
+	int expected_dependent[5]   = { 3, 5, 2, 4, 1 };
+
+	ASSERT_THAT(actual_independent, ::testing::ElementsAreArray(expected_independent));
+	ASSERT_THAT(actual_dependent, ::testing::ElementsAreArray(expected_dependent));
+}
 } // namespace
