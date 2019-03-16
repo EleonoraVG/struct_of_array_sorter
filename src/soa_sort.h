@@ -64,11 +64,10 @@ namespace {
 // then applied to the remaining args.
 //
 // The args are iterators which point to starting point where the permutation will be applied.
-template <class Iterator, class... Iterators>
+template <class Iterator, typename Compare, class... Iterators>
 void sort_cmp(
     Iterator first, Iterator last,
-    const std::function<bool(const decltype(*first)& a, const decltype(*first)& b)>&
-        cmp,
+	Compare cmp,
     Iterators... args)
 {
   std::vector<int> indices(std::distance(first, last));
