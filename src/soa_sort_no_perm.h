@@ -4,42 +4,60 @@
 
 namespace soa_sort_no_perm {
 namespace {
+  constexpr int MIN_N_QUICKSORT = 32;
 
   // Base case for parameter packing of swap.
-  template <class Iterator>
-  void swap(int i, int j, Iterator it)
+  template <class Iterator, class IteratorDiff>
+  void swap(IteratorDiff i, IteratorDiff j, Iterator it)
   {
     std::iter_swap(it + i, it + j);
   }
 
   // apply the swap to all args.
-  template <class Iterator, class... Iterators>
-  void swap(int i, int j, Iterator it, Iterators... args)
+  template <class Iterator, class IteratorDiff, class... Iterators>
+  void swap(IteratorDiff i, IteratorDiff j, Iterator it, Iterators... args)
   {
     std::iter_swap(it + i, it + j);
     swap(i, j, args...);
   }
 
-  template <class Iterator, typename Compare, class... Iterators>
-  int partition(Iterator it, int lo, int hi, Compare cmp, Iterators... args)
+  template <class Iterator, class IteratorDiff, typename Compare, class... Iterators>
+  auto partition(Iterator it, IteratorDiff lo, IteratorDiff hi, Compare cmp, Iterators... args)
   {
     auto pivot = *(it + hi);
-    int i = lo;
-    for (int j = lo; j < hi; j++) {
+    auto i = lo;
+    for (auto j = lo; j < hi; j++) {
       if (cmp(*(it + j), pivot)) {
         swap(i, j, it, args...);
         i += 1;
       }
     }
     swap(i, hi, it, args...);
+
     return i;
   }
 
-  template <class Iterator, typename Compare, class... Iterators>
-  void quick_sort(Iterator list, int lo, int hi, Compare cmp, Iterators... args)
+  template <class Iterator, class IteratorDiff, typename Compare, class... Iterators>
+  void insertion_sort(Iterator list, IteratorDiff lo, IteratorDiff hi, Compare cmp, Iterators... args)
+  {
+    for (auto i = lo + 1; i < hi; i++)
+    {
+	  auto curItem = list + i;
+      std::rotate(std::upper_bound(list + lo, curItem, *curItem), curItem, curItem + 1);
+    }
+  }
+
+  template <class Iterator, class IteratorDiff, typename Compare, class... Iterators>
+  void quick_sort(Iterator list, IteratorDiff lo, IteratorDiff hi, Compare cmp, Iterators... args)
   {
     if (lo < hi) {
-      int p = partition(list, lo, hi, cmp, args...);
+      if (hi - lo < MIN_N_QUICKSORT)
+      {
+        insertion_sort(list, lo, hi, cmp, args...);
+        return;
+      }
+
+      auto p = partition(list, lo, hi, cmp, args...);
       quick_sort(list, lo, p - 1, cmp, args...);
       quick_sort(list, p + 1, hi, cmp, args...);
     }
@@ -58,8 +76,10 @@ void sort_cmp(
     Compare cmp,
     Iterators... args)
 {
-  int hi = std::distance(first, last) - 1;
-  quick_sort(first, 0, hi, cmp, args...);
+  using IteratorDiff = typename std::iterator_traits<Iterator>::difference_type;
+  IteratorDiff lo = 0;
+  IteratorDiff hi = std::distance(first, last) - 1;
+  quick_sort(first, lo, hi, cmp, args...);
 }
 
 // Sort the elements in range [first, last) with a custom comparator.
