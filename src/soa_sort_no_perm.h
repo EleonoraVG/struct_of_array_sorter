@@ -32,7 +32,6 @@ namespace {
       }
     }
     swap(i, hi, it, args...);
-
     return i;
   }
 
@@ -75,7 +74,6 @@ void sort(Iterator first, Iterator last, Iterators... args)
   auto cmp = [](const decltype(*first)& a, const decltype(*first)& b) {
     return a < b;
   };
-
   sort_cmp(first, last, cmp, args...);
 }
 
