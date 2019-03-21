@@ -1,21 +1,18 @@
 #ifndef SOASORTNOPERM_H
 #define SOASORTNOPERM_H
-#include <algorithm>
 #include <functional>
-#include <iostream>
-#include <numeric>
-#include <thread>
-#include <vector>
+
 namespace soa_sort_no_perm {
 namespace {
 
-  // Base case for swap parameter packing.
+  // Base case for parameter packing of swap.
   template <class Iterator>
   void swap(int i, int j, Iterator it)
   {
     std::iter_swap(it + i, it + j);
   }
 
+  // apply the swap to all args.
   template <class Iterator, class... Iterators>
   void swap(int i, int j, Iterator it, Iterators... args)
   {
@@ -38,6 +35,7 @@ namespace {
 
     return i;
   }
+
   template <class Iterator, typename Compare, class... Iterators>
   void quick_sort(Iterator list, int lo, int hi, Compare cmp, Iterators... args)
   {
