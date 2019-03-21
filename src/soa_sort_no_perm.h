@@ -23,7 +23,7 @@ namespace {
   template <class Iterator, typename Compare, class... Iterators>
   int partition(Iterator it, int lo, int hi, Compare cmp, Iterators... args)
   {
-    int pivot = *(it + hi);
+    auto pivot = *(it + hi);
     int i = lo;
     for (int j = lo; j < hi; j++) {
       if (cmp(*(it + j), pivot)) {
