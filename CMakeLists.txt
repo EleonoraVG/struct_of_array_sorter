@@ -40,7 +40,7 @@ endif()
 find_package (Threads)
 
 # Build example and include the header-only library soa_sort.h
-add_executable(example src/example.cc src/soa_sort.h)
+add_executable(example src/example.cc src/soa_sort.h src/soa_sort_no_perm.h)
 add_executable(test_particles tests/particles.cc)
 target_include_directories(test_particles PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
 target_link_libraries (example ${CMAKE_THREAD_LIBS_INIT})
