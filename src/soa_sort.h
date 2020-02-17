@@ -2,105 +2,146 @@
 #define SOASORT_H
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include <numeric>
-#include <thread>
 #include <vector>
+#include <tuple>
+#include <assert.h>
+
+#if defined(SOASORT_USE_TBB_PARALLEL)
+    #include <tbb/tbb.h>
+    #include <tbb/parallel_sort.h>
+    #define PAR_FOR(start, end, func) tbb::parallel_for(start, end, func);
+    #define PAR_SORT(begin, end, comparator) tbb::parallel_sort(begin, end, comparator);
+#elif defined(SOASORT_USE_STD_PARALLEL)
+    #include <thread>
+    #include <execution>
+    // Can't do parallel index-based for loop in std cpp17
+    #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
+    #define PAR_SORT(begin, end, comparator) std::sort(std::execution::par_unseq, begin, end, comparator);
+#else
+    // Fallback to sequential algorithms
+    #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
+    #define PAR_SORT(begin, end, comparator) std::sort(begin, end, comparator);
+#endif
+
+
 namespace soa_sort {
 
-constexpr bool THREADING = true;
-namespace {
-
-  template <class Iterator>
-  void apply_permutation(const std::vector<int>& indices,
-      Iterator first)
-  {
-
-    std::vector<bool> done(indices.size());
-    for (std::size_t i = 0; i < indices.size(); i++) {
-      if (!done[i]) {
-        done[i] = true;
-        std::size_t prev_j = i;
-        std::size_t j = indices[i];
-        while (i != j) {
-          std::iter_swap(first + prev_j, first + j);
-          done[j] = true;
-          prev_j = j;
-          j = indices[j];
+    template<bool AllowParallelization>
+  struct soa_sort_implementation {
+    template <class Iterator>
+    static void apply_permutation(const std::vector<int>& indices, Iterator begin)
+    {
+            auto indicesSize = indices.size();
+      std::vector<bool> done(indicesSize);
+      for (std::size_t i = 0; i < indicesSize; ++i) {
+        if (!done[i]) {
+          done[i] = true;
+          std::size_t prev_j = i;
+          std::size_t j = indices[i];
+          while (i != j) {
+            std::iter_swap(begin + prev_j, begin + j);
+            done[j] = true;
+            prev_j = j;
+            j = indices[j];
+          }
         }
       }
     }
-  }
 
-  // Base case for parameter packing.
-  template <class Iterator>
-  void sort(const std::vector<int>& indices, Iterator it)
-  {
-    apply_permutation(indices, it);
-  }
+        template <class Head>
+        static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head)
+        {
+            if(acc == i) {
+                apply_permutation(indices, head);
+            } else {
+                // This should never happen
+                assert(false);
+            }
+        }
 
-  // Start a new thread for every apply permutation.
-  template <class Iterator, class... Iterators>
-  void sort(const std::vector<int>& indices, Iterator i1,
-      Iterators... args)
-  {
-    if (THREADING) {
-      std::thread t1(apply_permutation<Iterator>, indices, i1);
-      sort(indices, args...);
-      t1.join();
-    } else {
-      apply_permutation(indices, i1);
-      sort(indices, args...);
-    }
-  }
-} // namespace
+        template <class Head, class... Tail>
+        static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head, Tail... tail)
+        {
+            if(acc == i){
+                apply_permutation(indices, head);
+            }else{
+                apply_permutation_to_ith_iterator(indices, i, acc+1, tail...);
+            }
+        }
 
-// Sort the elements in range [first, last) with a custom comparator.
-// Apply the permutation determined by the [first, last) sort order to the remaining iterators
-// given by args.
-//
-// First and last determine the range of elements to sort.
-// The value of the elements from [first, last) determine the permutation which is
-// then applied to the remaining args.
-//
-// The args are iterators which point to starting point where the permutation will be applied.
-template <class Iterator, typename Compare, class... Iterators>
-void sort_cmp(
-    Iterator first, Iterator last,
-	Compare cmp,
-    Iterators... args)
-{
-  std::vector<int> indices(std::distance(first, last));
-  std::iota(indices.begin(), indices.end(), 0);
+        template <class... Iterators>
+        static void apply_permutation(const std::vector<int>& indices, Iterators... args)
+        {
+            auto iteratorCount = sizeof...(Iterators);
+            auto func = [&indices, &args...](auto i){
+                apply_permutation_to_ith_iterator(indices, i, 0, args...);
+            };
+            decltype(iteratorCount) start = 0;
 
-  // Sort the indices using the values found in the first iterator.
-  std::sort(indices.begin(), indices.end(),
-      [first, cmp](const int& a, const int& b) {
-        return cmp(*(first + a), *(first + b));
-      });
-
-  // Apply the calculated permutation to all other iterators.
-  sort(indices, first, args...);
-}
-
-// Sort the elements in range [first, last) in ascending order.
-// Apply the permutation determined by the [first, last) sort order to the remaining iterators
-// given by args.
-//
-// The parameters first, last determine the range of elements to sort.
-// The value of the elements from [first, last) determine the permutation which is then applied
-// to the remaining args.
-//
-// The args are iterators which point to starting point where the permutation will be applied.
-template <class Iterator, class... Iterators>
-void sort(Iterator first, Iterator last, Iterators... args)
-{
-  auto cmp = [](const decltype(*first)& a, const decltype(*first)& b) {
-    return a < b;
+            if(AllowParallelization) {
+                PAR_FOR(start, iteratorCount, func)
+            } else {
+                for (auto i = start; i < iteratorCount; ++i) {
+                    func(i);
+                }
+            }
+        }
   };
 
-  sort_cmp(first, last, cmp, args...);
-}
+  // Sort the elements in range [first, last) with a custom comparator.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators
+  // given by args.
+  //
+  // First and last determine the range of elements to sort.
+  // The value of the elements from [first, last) determine the permutation which is
+  // then applied to the remaining args.
+  //
+  // The args are iterators which point to starting point where the permutation will be applied.
+  template <bool AllowParallelization, class Iterator, typename Compare, class... Iterators>
+  void sort_cmp(
+    Iterator first, Iterator last,
+    Compare cmp,
+    Iterators... args)
+  {
+    std::vector<int> indices(std::distance(first, last));
+    std::iota(indices.begin(), indices.end(), 0);
+
+    // Sort the indices using the values found in the first iterator.
+    auto begin = indices.begin();
+    auto end = indices.end();
+    auto comparator = [first, cmp](const int& a, const int& b) {
+            return cmp(*(first + a), *(first + b));
+        };
+    if(AllowParallelization) {
+        PAR_SORT(begin, end, comparator)
+        } else {
+            std::sort(begin, end, comparator);
+    }
+
+    // Apply the calculated permutation to all other iterators.
+        soa_sort_implementation<AllowParallelization>::apply_permutation(indices, first, args...);
+  }
+
+  // Sort the elements in range [first, last) in ascending order.
+  // Apply the permutation determined by the [first, last) sort order to the remaining iterators
+  // given by args.
+  //
+  // The parameters first, last determine the range of elements to sort.
+  // The value of the elements from [first, last) determine the permutation which is then applied
+  // to the remaining args.
+  //
+  // The args are iterators which point to starting point where the permutation will be applied.
+  template <bool AllowParallelization, class Iterator, class... Iterators>
+  void sort(Iterator first, Iterator last, Iterators... args)
+  {
+    auto cmp = [](const decltype(*first)& a, const decltype(*first)& b) {
+      return a < b;
+    };
+
+    sort_cmp<AllowParallelization>(first, last, cmp, args...);
+  }
 
 } // namespace soa
 #endif // SOASORT_H
+

@@ -13,7 +13,7 @@ TEST(SoaSortTest, EmptyIndependentAndEmptyDependent)
   std::vector<int> actual_dependent = {};
 
   // Sort
-  soa_sort::sort<decltype(actual_independent.begin())>(
+  soa_sort::sort<false, decltype(actual_independent.begin())>(
       actual_independent.begin(), actual_independent.end(),
       actual_dependent.begin());
 
@@ -31,7 +31,7 @@ TEST(SoaSortTest, SingleIntIndependentAndSingleIntDependent)
   std::vector<int> actual_dependent = { 3, 4, 1, 2, 5 };
 
   // Sort
-  soa_sort::sort<>(
+  soa_sort::sort<false>(
       actual_independent.begin(), actual_independent.end(),
       actual_dependent.begin());
 
@@ -48,7 +48,7 @@ TEST(SoaSortTest, Test2IntArrays)
   int actual_dependent[5] = { 3, 4, 1, 2, 5 };
 
   // Sort
-  soa_sort::sort<decltype(std::begin(actual_independent))>(
+  soa_sort::sort<false, decltype(std::begin(actual_independent))>(
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent));
 
@@ -66,7 +66,7 @@ TEST(SoaSortTest, Test2IntArraysOneChar)
   int actual_dependent_1[5] = { 'c', 'b', 'e', 'd', 'a' };
 
   // Sort
-  soa_sort::sort<decltype(std::begin(actual_independent))>(
+  soa_sort::sort<false, decltype(std::begin(actual_independent))>(
       std::begin(actual_independent), std::end(actual_independent),
       std::begin(actual_dependent_0), std::begin(actual_dependent_1));
 
@@ -86,7 +86,7 @@ TEST(SoaSortTest, TestComparator)
 	int actual_dependent[5]   = {  3,  2, 5,  4,  1 };
 	
 	// Sort
-	soa_sort::sort_cmp(
+	soa_sort::sort_cmp<false>(
 		std::begin(actual_independent), std::end(actual_independent), 
 		[&referenced_data](auto a, auto b)
 		{
@@ -109,7 +109,7 @@ TEST(SoaSortTest, TestVectorOfArrays)
 	int actual_dependent[5] = { 3, 2, 5,  4, 1 };
 
 	// Sort
-	soa_sort::sort_cmp(
+	soa_sort::sort_cmp<false>(
 		std::begin(actual_independent), std::end(actual_independent),
 		[&referenced_data](auto a, auto b)
 		{
@@ -132,7 +132,7 @@ TEST(SoaSortTest, TestPartialSort)
 	int actual_dependent[5]   = {  3,  2, 5,  4,  1 };
 
 	// Sort
-	soa_sort::sort_cmp(
+	soa_sort::sort_cmp<false>(
 		std::begin(actual_independent) + 1, std::begin(actual_independent) + 4,
 		[&referenced_data](auto a, auto b)
 		{
