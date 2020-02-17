@@ -8,31 +8,31 @@
 #include <assert.h>
 
 #if defined(SOASORT_USE_TBB_PARALLEL)
-    #include <tbb/tbb.h>
-    #include <tbb/parallel_sort.h>
-    #define PAR_FOR(start, end, func) tbb::parallel_for(start, end, func);
-    #define PAR_SORT(begin, end, comparator) tbb::parallel_sort(begin, end, comparator);
+  #include <tbb/tbb.h>
+  #include <tbb/parallel_sort.h>
+  #define PAR_FOR(start, end, func) tbb::parallel_for(start, end, func);
+  #define PAR_SORT(begin, end, comparator) tbb::parallel_sort(begin, end, comparator);
 #elif defined(SOASORT_USE_STD_PARALLEL)
-    #include <thread>
-    #include <execution>
-    // Can't do parallel index-based for loop in std cpp17
-    #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
-    #define PAR_SORT(begin, end, comparator) std::sort(std::execution::par_unseq, begin, end, comparator);
+  #include <thread>
+  #include <execution>
+  // Can't do parallel index-based for loop in std cpp17
+  #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
+  #define PAR_SORT(begin, end, comparator) std::sort(std::execution::par_unseq, begin, end, comparator);
 #else
-    // Fallback to sequential algorithms
-    #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
-    #define PAR_SORT(begin, end, comparator) std::sort(begin, end, comparator);
+  // Fallback to sequential algorithms
+  #define PAR_FOR(start, end, func) for(auto i = start; i < end; ++i) { func(i); }
+  #define PAR_SORT(begin, end, comparator) std::sort(begin, end, comparator);
 #endif
 
 
 namespace soa_sort {
 
-    template<bool AllowParallelization>
+  template<bool AllowParallelization>
   struct soa_sort_implementation {
     template <class Iterator>
     static void apply_permutation(const std::vector<int>& indices, Iterator begin)
     {
-            auto indicesSize = indices.size();
+	  auto indicesSize = indices.size();
       std::vector<bool> done(indicesSize);
       for (std::size_t i = 0; i < indicesSize; ++i) {
         if (!done[i]) {
@@ -49,44 +49,44 @@ namespace soa_sort {
       }
     }
 
-        template <class Head>
-        static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head)
-        {
-            if(acc == i) {
-                apply_permutation(indices, head);
-            } else {
-                // This should never happen
-                assert(false);
-            }
-        }
+    template <class Head>
+    static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head)
+    {
+      if(acc == i) {
+        apply_permutation(indices, head);
+      } else {
+        // This should never happen
+        assert(false);
+      }
+    }
 
-        template <class Head, class... Tail>
-        static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head, Tail... tail)
-        {
-            if(acc == i){
-                apply_permutation(indices, head);
-            }else{
-                apply_permutation_to_ith_iterator(indices, i, acc+1, tail...);
-            }
-        }
+    template <class Head, class... Tail>
+    static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head, Tail... tail)
+    {
+      if(acc == i){
+        apply_permutation(indices, head);
+      }else{
+        apply_permutation_to_ith_iterator(indices, i, acc+1, tail...);
+      }
+    }
 
-        template <class... Iterators>
-        static void apply_permutation(const std::vector<int>& indices, Iterators... args)
-        {
-            auto iteratorCount = sizeof...(Iterators);
-            auto func = [&indices, &args...](auto i){
-                apply_permutation_to_ith_iterator(indices, i, 0, args...);
-            };
-            decltype(iteratorCount) start = 0;
-
-            if(AllowParallelization) {
-                PAR_FOR(start, iteratorCount, func)
-            } else {
-                for (auto i = start; i < iteratorCount; ++i) {
-                    func(i);
-                }
-            }
+    template <class... Iterators>
+    static void apply_permutation(const std::vector<int>& indices, Iterators... args)
+    {
+      auto iteratorCount = sizeof...(Iterators);
+      auto func = [&indices, &args...](auto i){
+        apply_permutation_to_ith_iterator(indices, i, 0, args...);
+      };
+      decltype(iteratorCount) start = 0;
+	  
+      if(AllowParallelization) {
+        PAR_FOR(start, iteratorCount, func)
+      } else {
+        for (auto i = start; i < iteratorCount; ++i) {
+          func(i);
         }
+      }
+    }
   };
 
   // Sort the elements in range [first, last) with a custom comparator.
@@ -111,16 +111,16 @@ namespace soa_sort {
     auto begin = indices.begin();
     auto end = indices.end();
     auto comparator = [first, cmp](const int& a, const int& b) {
-            return cmp(*(first + a), *(first + b));
-        };
+      return cmp(*(first + a), *(first + b));
+    };
     if(AllowParallelization) {
-        PAR_SORT(begin, end, comparator)
-        } else {
-            std::sort(begin, end, comparator);
+      PAR_SORT(begin, end, comparator)
+    } else {
+      std::sort(begin, end, comparator);
     }
 
     // Apply the calculated permutation to all other iterators.
-        soa_sort_implementation<AllowParallelization>::apply_permutation(indices, first, args...);
+    soa_sort_implementation<AllowParallelization>::apply_permutation(indices, first, args...);
   }
 
   // Sort the elements in range [first, last) in ascending order.
