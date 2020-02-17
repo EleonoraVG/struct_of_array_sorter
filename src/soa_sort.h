@@ -29,6 +29,8 @@ namespace soa_sort {
 
   template<bool AllowParallelization>
   struct soa_sort_implementation {
+	// Apply a permutation to one iterator.
+	// Each element at position i is moved to indices[i]
     template <class Iterator>
     static void apply_permutation(const std::vector<int>& indices, Iterator begin)
     {
@@ -49,6 +51,7 @@ namespace soa_sort {
       }
     }
 
+	// Base case, apply a permutation to the head element if i == acc, error otherwise
     template <class Head>
     static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head)
     {
@@ -60,6 +63,10 @@ namespace soa_sort {
       }
     }
 
+	// Apply a permutation to the ith element in a list.
+	// If i == acc, then we have reached the target element and apply_permutation is called.
+	// Else, recurse with the tail of the list and incremented acc.
+	// Recursion is used because parameter packs cannot be indexed by a runtime index.
     template <class Head, class... Tail>
     static void apply_permutation_to_ith_iterator(const std::vector<int>& indices, unsigned int i, unsigned int acc, Head head, Tail... tail)
     {
@@ -70,6 +77,7 @@ namespace soa_sort {
       }
     }
 
+	// Apply a permutation to multiple iterators.
     template <class... Iterators>
     static void apply_permutation(const std::vector<int>& indices, Iterators... args)
     {
