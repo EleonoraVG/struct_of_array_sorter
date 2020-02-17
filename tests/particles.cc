@@ -1,5 +1,5 @@
 #if __has_include("execution")
-//#define SOASORT_USE_STD_PARALLEL
+#define SOASORT_USE_STD_PARALLEL
 #endif // __has_include("execution")
 
 #include "soa_sort.h"
