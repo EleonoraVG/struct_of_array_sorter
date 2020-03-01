@@ -1,3 +1,7 @@
+#if __has_include("execution")
+#define SOASORT_USE_STD_PARALLEL
+#endif // __has_include("execution")
+
 #include "soa_sort.h"
 #include "utility.h"
 #include <chrono>
@@ -119,7 +123,7 @@ int main()
       std::cout << "Sorting by position x coordinate" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa_sort::sort_cmp(
+      soa_sort::sort_cmp<true>(
           particles.positions.begin(), particles.positions.end(),
           [](const auto& a, const auto& b) { return a.x < b.x; },
           particles.masses.begin(), particles.colors.begin(), particles.velocities.begin());
@@ -134,7 +138,7 @@ int main()
       std::cout << "Sorting by velocity y value" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa_sort::sort_cmp(
+      soa_sort::sort_cmp<true>(
           particles.velocities.begin(), particles.velocities.end(),
           [](const auto& a, const auto& b) { return a.y < b.y; },
           particles.masses.begin(), particles.colors.begin(), particles.positions.begin());
@@ -149,7 +153,7 @@ int main()
       std::cout << "Sorting by mass" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa_sort::sort(
+      soa_sort::sort<true>(
           particles.masses.begin(), particles.masses.end(),
           particles.positions.begin(), particles.colors.begin(), particles.velocities.begin());
       auto finish = std::chrono::high_resolution_clock::now();
@@ -162,7 +166,7 @@ int main()
       std::cout << "Sorting by color alpha value" << std::endl;
 
       auto start = std::chrono::high_resolution_clock::now();
-      soa_sort::sort_cmp(
+      soa_sort::sort_cmp<true>(
           particles.colors.begin(), particles.colors.end(),
           [](const auto& a, const auto& b) { return a.a < b.a; },
           particles.positions.begin(), particles.masses.begin(), particles.velocities.begin());
